@@ -30,21 +30,21 @@ import uk.ac.bris.cs.scotlandyard.model.PlayerConfiguration.Builder;
 
 public class ModelCreationTest extends ModelTestBase {
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = NullPointerException.class)//DONE
 	public void testNullMrXShouldThrow() {
 		createGame(
 				null,
 				of(Red, 1));
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = NullPointerException.class)//DONE
 	public void testNullDetectiveShouldThrow() {
 		createGame(
 				of(Black, 1),
 				null);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = NullPointerException.class)//DONE
 	public void testAnyNullDetectiveShouldThrow() {
 		createGame(
 				of(Black, 1),
@@ -52,14 +52,14 @@ public class ModelCreationTest extends ModelTestBase {
 				(PlayerConfiguration) null);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testNoMrXShouldThrow() {
 		createGame(
 				of(Blue, 1),
 				of(Red, 2));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testMoreThanOneMrXShouldThrow() {
 		createGame(
 				of(Black, 1),
