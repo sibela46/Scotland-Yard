@@ -66,14 +66,14 @@ public class ModelCreationTest extends ModelTestBase {
 				of(Black, 2));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testSwappedMrXShouldThrow() {
 		createGame(
 				of(Blue, 1),
 				of(Black, 2));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testDuplicateDetectivesShouldThrow() {
 		createGame(
 				of(Black, 1),
@@ -81,14 +81,14 @@ public class ModelCreationTest extends ModelTestBase {
 				of(Blue, 2));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testLocationOverlapBetweenMrXAndDetectiveShouldThrow() {
 		createGame(
 				of(Black, 1),
 				of(Blue, 1));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testLocationOverlapBetweenDetectivesShouldThrow() {
 		createGame(
 				of(Black, 1),

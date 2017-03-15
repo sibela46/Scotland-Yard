@@ -43,9 +43,9 @@ public class ScotlandYardModel implements ScotlandYardGame {
 		this.firstDetective = requireNonNull(firstDetective);
 		if(this.firstDetective.colour.isMrX()) throw new IllegalArgumentException("More than one MrX.");
 		if(this.mrX.location == this.firstDetective.location) throw new IllegalArgumentException("Detective has the same location as MrX.");
+		if(!this.firstDetective.tickets.isEmpty()) throw new IllegalArgumentException("Detective has no tickets.");//checks if detective is missing any tickets.
 		if(this.firstDetective.tickets.get(Double) != 0) throw new IllegalArgumentException("Detective has double tickets.");
 		if(this.firstDetective.tickets.get(Secret) != 0) throw new IllegalArgumentException("Detective has a secret ticket."); //checks if detective has a secret ticket.
-		if(this.firstDetective.tickets.isEmpty()) throw new IllegalArgumentException("Detective has no tickets.");
 		
 		for (PlayerConfiguration one : restOfTheDetectives){
 			if(this.firstDetective.colour.equals(one.colour)) throw new IllegalArgumentException("This detective already exists.");
