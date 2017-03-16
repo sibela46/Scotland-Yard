@@ -1,8 +1,7 @@
 package uk.ac.bris.cs.scotlandyard.model;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonList;
@@ -10,13 +9,11 @@ import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
-import static uk.ac.bris.cs.scotlandyard.model.Colour.Black;
+import static uk.ac.bris.cs.scotlandyard.model.Colour.*;
 import static uk.ac.bris.cs.scotlandyard.model.Ticket.Double;
 import static uk.ac.bris.cs.scotlandyard.model.Ticket.Secret;
-import java.util.ArrayList;
+
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -31,32 +28,37 @@ public class ScotlandYardModel implements ScotlandYardGame {
 	public PlayerConfiguration mrX, firstDetective;
 	public List<Boolean> rounds;
 	public Graph<Integer, Transport> graph;
-	public ArrayList<PlayerConfiguration> restOfTheDetectives;
+	public ArrayList<PlayerConfiguration> restOfTheDetectives = new ArrayList<>();
+	public HashMap<Colour, Integer> colours;
 
 	public ScotlandYardModel(List<Boolean> rounds, Graph<Integer, Transport> graph,
 			PlayerConfiguration mrX, PlayerConfiguration firstDetective,
 			PlayerConfiguration... restOfTheDetectives) {
-		
+
+		if(requireNonNull(rounds).isEmpty()) throw new IllegalArgumentException("Oops");
+		if(requireNonNull(graph).isEmpty()) throw new IllegalArgumentException("Oops");
+
+		colours = new HashMap<>();
+		colours.put(Blue, 0);
+		colours.put(Red, 0);
+		colours.put(Black, 0);
+		colours.put(Green, 0);
+		colours.put(Yellow, 0);
+
 		this.mrX = requireNonNull(mrX);
-		if(!mrX.colour.isMrX()) throw new IllegalArgumentException("No MrX.");
-		
 		this.firstDetective = requireNonNull(firstDetective);
-		if(this.firstDetective.colour.isMrX()) throw new IllegalArgumentException("More than one MrX.");
-		if(this.mrX.location == this.firstDetective.location) throw new IllegalArgumentException("Detective has the same location as MrX.");
-		if(!this.firstDetective.tickets.isEmpty()) throw new IllegalArgumentException("Detective has no tickets.");//checks if detective is missing any tickets.
-		if(this.firstDetective.tickets.get(Double) != 0) throw new IllegalArgumentException("Detective has double tickets.");
-		if(this.firstDetective.tickets.get(Secret) != 0) throw new IllegalArgumentException("Detective has a secret ticket."); //checks if detective has a secret ticket.
-		
-		for (PlayerConfiguration one : restOfTheDetectives){
-			if(this.firstDetective.colour.equals(one.colour)) throw new IllegalArgumentException("This detective already exists.");
-			if(one.colour.isMrX()) throw new IllegalArgumentException("More than one MrX.");
-			if(this.mrX.location == one.location) throw new IllegalArgumentException("Detective has the same location as MrX.");
-			this.restOfTheDetectives.add(requireNonNull(one));
+		colours.put(firstDetective.colour, colours.get(firstDetective.colour) + 1);
+		for(PlayerConfiguration current : restOfTheDetectives) {
+
+			this.restOfTheDetectives.add(requireNonNull(current));
 		}
-		
-		this.rounds = requireNonNull(rounds);
-		this.graph = requireNonNull(graph);
-		
+
+		if(!mrX.colour.isMrX()) throw new IllegalArgumentException("There is no MRX");
+		if(firstDetective.colour.isMrX()) throw new IllegalArgumentException("There is more than one MRX");
+
+		for(PlayerConfiguration current : this.restOfTheDetectives)
+			colours.put(current.colour, colours.get(current.colour) + 1);
+		if(colours.containsValue(2)) throw new IllegalArgumentException("Duplicato");
 	}
 
 	@Override
