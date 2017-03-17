@@ -96,7 +96,7 @@ public class ModelCreationTest extends ModelTestBase {
 				of(Blue, 2));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testDetectiveHaveSecretTicketShouldThrow() {
 		PlayerConfiguration blue = new Builder(Blue).using(mocked())
 				.with(makeTickets(1, 1, 1, 0, 1))
@@ -104,7 +104,7 @@ public class ModelCreationTest extends ModelTestBase {
 		createGame(validMrX(), blue);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testDetectiveHaveDoubleTicketShouldThrow() {
 		PlayerConfiguration blue = new Builder(Blue).using(mocked())
 				.with(makeTickets(1, 1, 0, 1, 1))
@@ -112,7 +112,7 @@ public class ModelCreationTest extends ModelTestBase {
 		createGame(validMrX(), blue);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testMrXMissingAnyTicketsShouldThrow() {
 		Map<Ticket, Integer> tickets = new HashMap<>();
 		tickets.put(Ticket.Taxi, 1);
@@ -121,7 +121,7 @@ public class ModelCreationTest extends ModelTestBase {
 		createGame(validMrX(), blue);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testDetectiveMissingAnyTicketsShouldTrow() {
 		Map<Ticket, Integer> tickets = new HashMap<>();
 		tickets.put(Ticket.Secret, 1);
@@ -131,7 +131,7 @@ public class ModelCreationTest extends ModelTestBase {
 		createGame(black, validBlue());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testEmptyRoundsShouldThrow() {
 		createGame(
 				emptyList(),
@@ -140,7 +140,7 @@ public class ModelCreationTest extends ModelTestBase {
 				of(Blue, 1));
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = NullPointerException.class)//DONE
 	public void testNullRoundsShouldThrow() {
 		createGame(
 				null,
@@ -149,7 +149,7 @@ public class ModelCreationTest extends ModelTestBase {
 				of(Blue, 1));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)//DONE
 	public void testEmptyMapShouldThrow() {
 		createGame(
 				emptyList(),
@@ -158,7 +158,7 @@ public class ModelCreationTest extends ModelTestBase {
 				of(Blue, 1));
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = NullPointerException.class)//DONE
 	public void testNullMapShouldThrow() {
 		createGame(
 				rounds(true),
@@ -168,7 +168,7 @@ public class ModelCreationTest extends ModelTestBase {
 	}
 
 	@Test
-	public void testTwoPlayer() {
+	public void testTwoPlayer() { //DONE
 		createGame(
 				validMrX(),
 				validBlue());

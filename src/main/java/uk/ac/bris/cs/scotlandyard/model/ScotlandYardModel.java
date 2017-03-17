@@ -10,13 +10,14 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.bris.cs.scotlandyard.model.Colour.*;
-import static uk.ac.bris.cs.scotlandyard.model.Ticket.Double;
-import static uk.ac.bris.cs.scotlandyard.model.Ticket.Secret;
+import static uk.ac.bris.cs.scotlandyard.model.Ticket.*;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import uk.ac.bris.cs.gamekit.graph.Edge;
 import uk.ac.bris.cs.gamekit.graph.Graph;
 import uk.ac.bris.cs.gamekit.graph.ImmutableGraph;
@@ -35,8 +36,11 @@ public class ScotlandYardModel implements ScotlandYardGame {
 			PlayerConfiguration mrX, PlayerConfiguration firstDetective,
 			PlayerConfiguration... restOfTheDetectives) {
 
-		if(requireNonNull(rounds).isEmpty()) throw new IllegalArgumentException("Oops");
-		if(requireNonNull(graph).isEmpty()) throw new IllegalArgumentException("Oops");
+		if(requireNonNull(rounds).isEmpty()) throw new IllegalArgumentException("Rounds is empty");
+		if(requireNonNull(graph).isEmpty()) throw new IllegalArgumentException("Graph is empty");
+
+		this.rounds = rounds;
+		this.graph = graph;
 
 		colours = new HashMap<>();
 		colours.put(Blue, 0);
@@ -51,14 +55,28 @@ public class ScotlandYardModel implements ScotlandYardGame {
 		for(PlayerConfiguration current : restOfTheDetectives) {
 
 			this.restOfTheDetectives.add(requireNonNull(current));
+			if (current.tickets.get(Double) != 0) throw new IllegalArgumentException("Any of restOfTheDetectives has double tickets.");
+			if (current.tickets.get(Secret) != 0) throw new IllegalArgumentException("Any of restOfTheDetecrives has secret tickets.");
+
 		}
 
 		if(!mrX.colour.isMrX()) throw new IllegalArgumentException("There is no MRX");
 		if(firstDetective.colour.isMrX()) throw new IllegalArgumentException("There is more than one MRX");
-
 		for(PlayerConfiguration current : this.restOfTheDetectives)
 			colours.put(current.colour, colours.get(current.colour) + 1);
-		if(colours.containsValue(2)) throw new IllegalArgumentException("Duplicato");
+		if(colours.containsValue(2)) throw new IllegalArgumentException("This detective already exists.");
+
+		if(!(mrX.tickets.containsKey(Double) && mrX.tickets.containsKey(Secret) && mrX.tickets.containsKey(Taxi) && mrX.tickets.containsKey(Underground) && mrX.tickets.containsKey(Bus))) throw new IllegalArgumentException("MrX has no tickets");
+		if(!(firstDetective.tickets.containsKey(Double) && firstDetective.tickets.containsKey(Secret) && firstDetective.tickets.containsKey(Taxi) && firstDetective.tickets.containsKey(Underground) && firstDetective.tickets.containsKey(Bus))) throw new IllegalArgumentException("FirstDetective has no tickets");
+
+
+		if(firstDetective.tickets.get(Double) != 0) throw new IllegalArgumentException("First detective has double tickets.");
+		if(firstDetective.tickets.get(Secret) != 0) throw new IllegalArgumentException("First detective has secret tickets.");
+
+        if(firstDetective.location == mrX.location) throw new IllegalArgumentException("Location of mrX and firstDetective overlap.");//NAPRAVI GO ZA VSICHKI DETEKTIVI
+
+
+
 	}
 
 	@Override
@@ -87,8 +105,7 @@ public class ScotlandYardModel implements ScotlandYardGame {
 
 	@Override
 	public List<Colour> getPlayers() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		//return Collections.unmodifiableList(pla)
 	}
 
 	@Override
@@ -135,14 +152,12 @@ public class ScotlandYardModel implements ScotlandYardGame {
 
 	@Override
 	public List<Boolean> getRounds() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		return Collections.unmodifiableList(rounds);
 	}
 
 	@Override
 	public Graph<Integer, Transport> getGraph() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		return new ImmutableGraph<>(graph);
 	}
 
 }
