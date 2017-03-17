@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import uk.ac.bris.cs.gamekit.graph.Edge;
@@ -31,7 +32,7 @@ public class ScotlandYardModel implements ScotlandYardGame {
 	public Graph<Integer, Transport> graph;
 	public ArrayList<PlayerConfiguration> restOfTheDetectives = new ArrayList<>();
 	public HashMap<Colour, Integer> colours;
-
+	
 	public ScotlandYardModel(List<Boolean> rounds, Graph<Integer, Transport> graph,
 			PlayerConfiguration mrX, PlayerConfiguration firstDetective,
 			PlayerConfiguration... restOfTheDetectives) {
@@ -105,7 +106,8 @@ public class ScotlandYardModel implements ScotlandYardGame {
 
 	@Override
 	public List<Colour> getPlayers() {
-		//return Collections.unmodifiableList(pla)
+		// TODO
+		throw new RuntimeException("Implement me");
 	}
 
 	@Override
@@ -128,8 +130,7 @@ public class ScotlandYardModel implements ScotlandYardGame {
 
 	@Override
 	public boolean isGameOver() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		return false; //will have to change this later
 	}
 
 	@Override
