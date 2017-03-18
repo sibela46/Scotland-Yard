@@ -55,12 +55,13 @@ public class ScotlandYardModel implements ScotlandYardGame {
 
 	}
 
-	
+	// Checks whether the graph and visible rounds are empty
 	private void ValidMapCheck(){
-		if(requireNonNull(rounds).isEmpty()) throw new IllegalArgumentException("Rounds is empty");
-		if(requireNonNull(graph).isEmpty()) throw new IllegalArgumentException("Graph is empty");
+		if(rounds.isEmpty()) throw new IllegalArgumentException("Rounds is empty");
+		if(graph.isEmpty()) throw new IllegalArgumentException("Graph is empty");
 	}
 	
+	//Checks if the players already exists and whether their position overlap with mrX
 	private void ValidPlayersCheck (){
 		if(!players.get(0).colour.isMrX()) throw new IllegalArgumentException("MrX is missing");
 		
@@ -81,6 +82,7 @@ public class ScotlandYardModel implements ScotlandYardGame {
 		}
 	}
 	
+	//Checks whether all the players have all the ticket slots
 	private void ValidTicketSlotsCheck(){
 		for(PlayerConfiguration current : players){
 			Map<Ticket, Integer> tickets = current.tickets;
@@ -95,7 +97,7 @@ public class ScotlandYardModel implements ScotlandYardGame {
 	}
 	
 	
-	
+	//Checks whether the detective has double/secret tickets
 	private void ValidDetectiveTicketsCheck(){
 		Iterator<PlayerConfiguration> detectives = players.listIterator(1);
 		while(detectives.hasNext()){
