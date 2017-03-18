@@ -24,9 +24,12 @@ import uk.ac.bris.cs.gamekit.graph.Graph;
 public class ScotlandYardModel implements ScotlandYardGame {
 	
 	public List<Boolean> rounds;
+	public int currentRound;
 	public Graph<Integer, Transport> graph;
 	public List<PlayerConfiguration> players;
 	public HashMap<Colour, Integer> colours;
+	public Colour currentPlayer;
+	public Set<Colour> winningPlayers;
 	
 	public ScotlandYardModel(List<Boolean> rounds, Graph<Integer, Transport> graph,
 			PlayerConfiguration mrX, PlayerConfiguration firstDetective,
@@ -42,7 +45,9 @@ public class ScotlandYardModel implements ScotlandYardGame {
 		colours.put(White, 0);
 		
 		this.rounds = requireNonNull(rounds);
+		this.currentRound = 0; //initialised with 0 at first, will be changed later.
 		this.graph = requireNonNull(graph);
+		this.currentPlayer = Colour.Black;
 		players.add(requireNonNull(mrX));
 		players.add(requireNonNull(firstDetective));
 		for(PlayerConfiguration current : restOfTheDetectives)
@@ -139,8 +144,7 @@ public class ScotlandYardModel implements ScotlandYardGame {
 
 	@Override
 	public Set<Colour> getWinningPlayers() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		return Collections.unmodifiableSet(this.winningPlayers);
 	}
 
 	@Override
@@ -162,14 +166,12 @@ public class ScotlandYardModel implements ScotlandYardGame {
 
 	@Override
 	public Colour getCurrentPlayer() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		return this.currentPlayer;
 	}
 
 	@Override
 	public int getCurrentRound() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		return this.currentRound;
 	}
 
 	@Override
