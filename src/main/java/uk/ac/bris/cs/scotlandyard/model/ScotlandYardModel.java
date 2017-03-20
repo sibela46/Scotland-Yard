@@ -13,10 +13,11 @@ import static uk.ac.bris.cs.scotlandyard.model.Colour.*;
 import static uk.ac.bris.cs.scotlandyard.model.Ticket.*;
 import java.util.function.Consumer;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.sun.javafx.geom.*;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import uk.ac.bris.cs.gamekit.graph.*;
 import uk.ac.bris.cs.gamekit.graph.Edge;
-import uk.ac.bris.cs.gamekit.graph.Graph;
-import uk.ac.bris.cs.gamekit.graph.ImmutableGraph;
 import uk.ac.bris.cs.gamekit.graph.Graph;
 
 public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
@@ -66,7 +67,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		players_asColours = new ArrayList<>();
 		for(ScotlandYardPlayer current : players)
 			players_asColours.add(current.colour());
-		
+
 		currentPlayer = players.get(0).colour();
 		currentRound = NOT_STARTED;
 		lastMrLocation = 0;
@@ -140,12 +141,19 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	public void startRotate() {
 		ScotlandYardPlayer player = players.get(players_asColours.indexOf(currentPlayer));
 		Set<Move> Moves = new HashSet<>();
-		
-		player.player().makeMove(this, player.location(), validMoves(), this);
+		player.player().makeMove(this, player.location(), validMoves(player), this);
 	}
 	
-	public Set<Move> validMoves(){
-		return new HashSet<>();
+	public Set<Move> validMoves(ScotlandYardPlayer player){
+		Set valid = new HashSet<>();
+
+		Collection<Edge<Integer, Transport>> edgesFromLocation = graph.getEdgesFrom(graph.getNode(player.location()));
+
+		for(Edge<Integer, Transport> currentEdge : edgesFromLocation){
+			TicketMove move = new TicketMove(player.colour(), fromTransport(currentEdge.data()), currentEdge.destination().value());
+			valid.add(move);
+		}
+		return valid;
 	}
 	
 	@Override
@@ -166,7 +174,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 
 	@Override
 	public int getPlayerLocation(Colour colour) {
-		if(colour == colour.Black){
+		if(colour.isMrX()){
 			if(rounds.get(currentRound))
 				return players.get(players_asColours.indexOf(colour)).location();
 			else
@@ -214,8 +222,8 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 
 	@Override
 	public void accept(Move move) {
-		if(!validMoves().contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move");
-		
+		if(!validMoves(players.get(players_asColours.indexOf(currentPlayer))).contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move");
+		switch()
 	}
 
 }
