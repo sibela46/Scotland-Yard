@@ -145,13 +145,15 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	}
 	
 	public Set<Move> validMoves(ScotlandYardPlayer player){
-		Set valid = new HashSet<>();
+		Set<Move> valid = new HashSet<>();
 
 		Collection<Edge<Integer, Transport>> edgesFromLocation = graph.getEdgesFrom(graph.getNode(player.location()));
 
 		for(Edge<Integer, Transport> currentEdge : edgesFromLocation){
-			TicketMove move = new TicketMove(player.colour(), fromTransport(currentEdge.data()), currentEdge.destination().value());
-			valid.add(move);
+			if(player.hasTickets(fromTransport(currentEdge.data()))){
+				TicketMove move = new TicketMove(player.colour(), fromTransport(currentEdge.data()), currentEdge.destination().value());
+				valid.add(move);
+			}
 		}
 		return valid;
 	}
