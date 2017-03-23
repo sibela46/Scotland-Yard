@@ -1,24 +1,16 @@
 package uk.ac.bris.cs.scotlandyard.model;
 
-import java.util.*;
+import uk.ac.bris.cs.gamekit.graph.Edge;
+import uk.ac.bris.cs.gamekit.graph.Graph;
+import uk.ac.bris.cs.gamekit.graph.ImmutableGraph;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.unmodifiableCollection;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableSet;
+import java.util.*;
+import java.util.function.Consumer;
+
 import static java.util.Objects.requireNonNull;
 import static uk.ac.bris.cs.scotlandyard.model.Colour.*;
 import static uk.ac.bris.cs.scotlandyard.model.Ticket.*;
-import java.util.function.Consumer;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.sun.javafx.geom.*;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-import uk.ac.bris.cs.gamekit.graph.*;
-import uk.ac.bris.cs.gamekit.graph.Edge;
-import uk.ac.bris.cs.gamekit.graph.Graph;
+import static uk.ac.bris.cs.scotlandyard.model.Ticket.Double;
 
 public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	
@@ -79,7 +71,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		if(graph.isEmpty()) throw new IllegalArgumentException("Graph is empty");
 	}
 	
-	//Checks if the players already exists and whether their position overlap with mrX
+	//Checks if the players already exists and whether their position overlaps with mrX
 	private void ValidConfigurationsCheck (){
 		if(!configurations.get(0).colour.isMrX()) throw new IllegalArgumentException("MrX is missing");
 		
@@ -141,6 +133,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	public void startRotate() {
 		ScotlandYardPlayer player = players.get(players_asColours.indexOf(currentPlayer));
 		Set<Move> Moves = new HashSet<>();
+				
 		player.player().makeMove(this, player.location(), validMoves(player), this);
 	}
 	
@@ -151,7 +144,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 
 		for(Edge<Integer, Transport> currentEdge : edgesFromLocation){
 			if(player.hasTickets(fromTransport(currentEdge.data()))){
-				TicketMove move = new TicketMove(player.colour(), fromTransport(currentEdge.data()), currentEdge.destination().value());
+				TicketMove move = new TicketMove(player.colour(), fromTransport(currentEdge.data()), (int) currentEdge.destination().value());
 				valid.add(move);
 			}
 		}
@@ -225,7 +218,14 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	@Override
 	public void accept(Move move) {
 		if(!validMoves(players.get(players_asColours.indexOf(currentPlayer))).contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move");
-		switch()
+        switchPlayer(players.get(players_asColours.indexOf(currentPlayer)));
+	}
+	
+	private ScotlandYardPlayer switchPlayer(ScotlandYardPlayer player){
+		for (int i=0; i<players.size(); i++){
+			player = players.get(i);
+		}
+		return player;
 	}
 
 }
