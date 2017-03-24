@@ -171,17 +171,17 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	public int getPlayerLocation(Colour colour) {
 		if(colour.isMrX()){
 			if(rounds.get(currentRound))
-				return players.get(players_asColours.indexOf(colour)).location();
+				return getCurrentPlayerFromColour(colour).location();
 			else
 				return lastMrLocation;
 		}
 		
-		return players.get(players_asColours.indexOf(colour)).location();
+		return getCurrentPlayerFromColour(colour).location();
 	}
 
 	@Override
 	public int getPlayerTickets(Colour colour, Ticket ticket) {
-		return players.get(players_asColours.indexOf(colour)).tickets().get(ticket);
+		return getCurrentPlayerFromColour(colour).tickets().get(ticket);
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	@Override
 	public void accept(Move move) {
 		if(!validMoves(players.get(players_asColours.indexOf(currentPlayer))).contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move");
-        switchPlayer(players.get(players_asColours.indexOf(currentPlayer)));
+        switchPlayer(getCurrentPlayerFromColour(currentPlayer));
 	}
 	
 	private ScotlandYardPlayer switchPlayer(ScotlandYardPlayer player){
@@ -227,5 +227,8 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		}
 		return player;
 	}
-
+	
+	private ScotlandYardPlayer getCurrentPlayerFromColour(Colour colour){
+		return players.get(players_asColours.indexOf(colour));
+	}
 }
