@@ -132,8 +132,6 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	@Override
 	public void startRotate() {
 		ScotlandYardPlayer player = players.get(players_asColours.indexOf(currentPlayer));
-		Set<Move> Moves = new HashSet<>();
-				
 		player.player().makeMove(this, player.location(), validMoves(player), this);
 	}
 	
@@ -217,15 +215,17 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 
 	@Override
 	public void accept(Move move) {
-		if(!validMoves(players.get(players_asColours.indexOf(currentPlayer))).contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move");
-        switchPlayer(getCurrentPlayerFromColour(currentPlayer));
+		if(!validMoves(getCurrentPlayerFromColour(currentPlayer)).contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move");
+        nextPlayer();
+        ScotlandYardPlayer player = getCurrentPlayerFromColour(currentPlayer);
+        player.player().makeMove(this, player.location(), validMoves(player), this);
 	}
 	
-	private ScotlandYardPlayer switchPlayer(ScotlandYardPlayer player){
-		for (int i=0; i<players.size(); i++){
-			player = players.get(i);
-		}
-		return player;
+	private void nextPlayer(){
+		if(currentPlayer == players_asColours.get(players_asColours.size() - 1))
+			currentPlayer = players_asColours.get(0);
+		else
+			currentPlayer = players_asColours.get(players_asColours.indexOf(currentPlayer) + 1);
 	}
 	
 	private ScotlandYardPlayer getCurrentPlayerFromColour(Colour colour){
