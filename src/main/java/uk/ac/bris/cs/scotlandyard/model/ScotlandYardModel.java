@@ -216,15 +216,12 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	@Override
 	public void accept(Move move) {
 		if(!validMoves(getCurrentPlayerFromColour(currentPlayer)).contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move");
-        nextPlayer();
+		if(currentPlayer != players_asColours.get(players_asColours.size() - 1)) nextPlayer();
         ScotlandYardPlayer player = getCurrentPlayerFromColour(currentPlayer);
         player.player().makeMove(this, player.location(), validMoves(player), this);
 	}
 	
 	private void nextPlayer(){
-		if(currentPlayer == players_asColours.get(players_asColours.size() - 1))
-			currentPlayer = players_asColours.get(0);
-		else
 			currentPlayer = players_asColours.get(players_asColours.indexOf(currentPlayer) + 1);
 	}
 	
