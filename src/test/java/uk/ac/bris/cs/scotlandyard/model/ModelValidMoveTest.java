@@ -31,7 +31,7 @@ public class ModelValidMoveTest extends ModelTestBase {
 	// -- Detective related tests --
 
 	@Test
-	public void testDetectiveAt128MovesShouldProduce13ValidMoves() {
+	public void testDetectiveAt128MovesShouldProduce13ValidMoves() {	//DONE
 		PlayerConfiguration black = of(Black, 104);
 		PlayerConfiguration blue = new Builder(Blue).using(mocked())
 				.with(makeTickets(11, 8, 4, 0, 0))
@@ -59,7 +59,7 @@ public class ModelValidMoveTest extends ModelTestBase {
 	}
 
 	@Test
-	public void testDetectiveMovesOmittedIfNotEnoughTickets() {
+	public void testDetectiveMovesOmittedIfNotEnoughTickets() {		//DONE
 		PlayerConfiguration black = of(Black, 104);
 		PlayerConfiguration blue = new Builder(Blue).using(mocked())
 				.with(makeTickets(0, 8, 4, 0, 0))
@@ -83,7 +83,7 @@ public class ModelValidMoveTest extends ModelTestBase {
 	}
 
 	@Test
-	public void testDetectiveWithNoValidMovesShouldProducePassMove() {
+	public void testDetectiveWithNoValidMovesShouldProducePassMove() {	//Done
 		PlayerConfiguration black = of(Black, 104);
 		PlayerConfiguration red = of(Red, 111);
 		PlayerConfiguration blue = new Builder(Blue).using(mocked())
@@ -103,7 +103,7 @@ public class ModelValidMoveTest extends ModelTestBase {
 	}
 
 	@Test
-	public void testDetectiveMoveOmittedIfLocationOccupiedByOtherDetective() {
+	public void testDetectiveMoveOmittedIfLocationOccupiedByOtherDetective() {	//DONE
 		// this happens around london zoo where an awkward taxi route appears
 		// around location 2
 		PlayerConfiguration black = of(Black, 104);
@@ -131,7 +131,7 @@ public class ModelValidMoveTest extends ModelTestBase {
 	}
 
 	@Test
-	public void testDetectiveMoveNotOmittedIfDestinationOccupiedByMrX() {
+	public void testDetectiveMoveNotOmittedIfDestinationOccupiedByMrX() {	//DONE
 		PlayerConfiguration black = of(Black, 86);
 		PlayerConfiguration blue = of(Blue, 85);
 
