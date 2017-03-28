@@ -24,7 +24,7 @@ import uk.ac.bris.cs.scotlandyard.model.PlayerConfiguration.Builder;
 public class ModelPlayerTest extends ModelTestBase {
 
 	@Test
-	public void testDetectivePassMoveDoesNotAffectMrX() {
+	public void testDetectivePassMoveDoesNotAffectMrX() {	//Done
 		PlayerConfiguration mrX = new Builder(Black)
 				.using(mocked())
 				.with(makeTickets(2, 0, 0, 0, 0))
