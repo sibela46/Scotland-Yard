@@ -5,6 +5,7 @@ import uk.ac.bris.cs.gamekit.graph.Graph;
 import uk.ac.bris.cs.gamekit.graph.ImmutableGraph;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
@@ -26,6 +27,8 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	private List<Colour> players_asColours;
 	private MoveVisitor removeTicket;
 	private Boolean mrXisCaptured;
+	private final List<Spectator> spectators;
+	private ScotlandYardModel view;
 	
 	public ScotlandYardModel(List<Boolean> rounds, Graph<Integer, Transport> graph,
 			PlayerConfiguration mrX, PlayerConfiguration firstDetective,
@@ -33,6 +36,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		
 		configurations = new ArrayList<>();
 		winningPlayers = new HashSet<>();
+		spectators = new CopyOnWriteArrayList<>();
 		colours = new HashMap<>();
 		colours.put(Black, 0);
 		colours.put(Blue, 0);
@@ -41,6 +45,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		colours.put(Yellow, 0);
 		colours.put(White, 0);
 		
+		view = this;
 		this.rounds = requireNonNull(rounds);
 		this.currentRound = 0; //initialised with 0 at first, will be changed later.
 		this.graph = requireNonNull(graph);
@@ -69,29 +74,115 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		
 		removeTicket = new MoveVisitor(){
 			public void visit(PassMove move){
+				for(Spectator current : spectators)
+					current.onMoveMade(view, move);
 			}
 			public void visit(TicketMove move){
 				ScotlandYardPlayer curPlayer = getCurrentPlayerFromColour(currentPlayer);
+				ScotlandYardPlayer mrX = getCurrentPlayerFromColour(Black);
 				
 				curPlayer.location(move.destination());
 				
 				curPlayer.removeTicket(move.ticket());
+				
 				if(currentPlayer.isDetective()){
-					getCurrentPlayerFromColour(Black).addTicket(move.ticket());	
-					if(curPlayer.location() == players.get(0).location())
+					mrX.addTicket(move.ticket());	
+					if(curPlayer.location() == mrX.location()){
 						mrXisCaptured = true;
+					}
+					for (Spectator current : spectators){
+						current.onMoveMade(view, move);
+					}
 				}
-				if(currentPlayer.isMrX()) currentRound++;
+				if(currentPlayer.isMrX()) {
+					currentRound++;
+					for (Spectator current : spectators){
+						current.onRoundStarted(view, currentRound);
+						if (isRevealRound()) current.onMoveMade(view, move);
+						else current.onMoveMade(view, new TicketMove(curPlayer.colour(), move.ticket(), lastMrLocation));
+					}
+				}
 				
 			}
-			public void visit(DoubleMove move){
-				getCurrentPlayerFromColour(currentPlayer).location(move.finalDestination());
+			public void notifyOnRevealRound(DoubleMove move){
+				ScotlandYardPlayer mrX = players.get(0);
 				
-				getCurrentPlayerFromColour(currentPlayer).removeTicket(move.firstMove().ticket());
-				getCurrentPlayerFromColour(currentPlayer).removeTicket(move.secondMove().ticket());
-				getCurrentPlayerFromColour(currentPlayer).removeTicket(Double);
-				if(currentPlayer.isMrX()) currentRound++;
-		}};
+				if(isRevealRound()) { //FIRST MOVE IS REVEAL ROUND.
+					currentRound++;
+					if (isRevealRound()){ //SECOND MOVE IS REVEAL ROUND.
+						currentRound = currentRound - 2;
+						for(Spectator current : spectators)
+							current.onMoveMade(view, move);
+					}
+					else { //SECOND MOVE IS HIDDEN ROUND.
+						currentRound = currentRound - 2;
+						for(Spectator current : spectators){
+							current.onMoveMade(view, new DoubleMove(Black, move.firstMove(), new TicketMove(Black, move.secondMove().ticket(), move.firstMove().destination())));
+						}
+					}
+				}
+
+				else { //FIRST MOVE IS HIDDEN ROUND.
+					currentRound++;
+					if(isRevealRound()){ //SECOND MOVE IS REVEAL ROUND.
+						currentRound = currentRound - 2;
+						for(Spectator current : spectators){
+							current.onMoveMade(view, new DoubleMove(Black, new TicketMove(Black, move.firstMove().ticket(), lastMrLocation), move.secondMove()));
+									
+						}
+					}
+					else { //SECOND MOVE IS HIDDEN ROUND.
+						currentRound = currentRound - 2;
+						for(Spectator current : spectators){
+							current.onMoveMade(view, new DoubleMove(Black, move.firstMove().ticket(), lastMrLocation, move.secondMove().ticket(), lastMrLocation));
+						}
+					}
+				}
+			}
+			
+			public void visit(DoubleMove move){
+				ScotlandYardPlayer mrX = getCurrentPlayerFromColour(Black);
+				currentRound++;
+				
+				notifyOnRevealRound(move);
+				
+				firstMoveOfDoubleMove(move);
+				
+				secondMoveOfDoubleMove(move);
+				
+				
+				getCurrentPlayerFromColour(currentPlayer).location(move.finalDestination());
+				mrX.removeTicket(Double);
+		}
+		
+			private void firstMoveOfDoubleMove(DoubleMove move){
+				ScotlandYardPlayer mrX = getCurrentPlayerFromColour(Black);
+				
+				mrX.removeTicket(move.firstMove().ticket());
+				currentRound++;
+				mrX.location(move.firstMove().destination());
+				if (isRevealRound()) lastMrLocation = mrX.location();
+				for (Spectator current : spectators){
+					current.onRoundStarted(view, currentRound);
+					if(isRevealRound()) current.onMoveMade(view, move.firstMove());
+					else current.onMoveMade(view, new TicketMove(mrX.colour(), move.firstMove().ticket(), lastMrLocation));
+				}
+			}
+			
+			private void secondMoveOfDoubleMove(DoubleMove move){
+				ScotlandYardPlayer mrX = getCurrentPlayerFromColour(Black);
+				
+				mrX.removeTicket(move.secondMove().ticket());
+				currentRound++;
+				mrX.location(move.secondMove().destination());
+				if (isRevealRound()) lastMrLocation = mrX.location();
+				for (Spectator current : spectators){
+					current.onRoundStarted(view, currentRound);
+					if(isRevealRound()) current.onMoveMade(view, move.secondMove());
+					else current.onMoveMade(view, new TicketMove(mrX.colour(), move.secondMove().ticket(), lastMrLocation));
+				}
+			}
+		};
 	}
 
 	// Checks whether the graph and visible rounds are empty
@@ -147,21 +238,31 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	
 	@Override
 	public void registerSpectator(Spectator spectator) {
-		// TODO
-		throw new RuntimeException("Implement me");
+		requireNonNull(spectator);
+		if(!spectators.contains(spectator)){
+			this.spectators.add(spectator);
+		}
+		else throw new IllegalArgumentException("This spectator is already registered.");
 	}
 
 	@Override
 	public void unregisterSpectator(Spectator spectator) {
-		// TODO
-		throw new RuntimeException("Implement me");
+		requireNonNull(spectator);
+		if(!spectators.isEmpty()){
+			this.spectators.remove(requireNonNull(spectator));
+		}
+		else throw new IllegalArgumentException("No spectators to unregister.");	
 	}
 
 	@Override
 	public void startRotate() {
 		currentPlayer = players.get(0).colour();
-		if(isGameOver() == true) throw new IllegalStateException();
+		if(isGameOver() == true) throw new IllegalStateException("Game is not over initially.");
 		makeMoveCurrentPlayer();
+		
+		if(isGameOver())
+			for(Spectator current : spectators)
+				current.onGameOver(this, winningPlayers);
 	}
 	
 	public Set<Move> validMoves(ScotlandYardPlayer player){
@@ -250,10 +351,12 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	private Boolean LocationOccupiedByDetective(int location){
 		Boolean occupied = false;
 		
-		Iterator<ScotlandYardPlayer> detectives = players.listIterator(1);
-		while(detectives.hasNext())
-			if(detectives.next().location() == location)
-				occupied = true;
+			for (ScotlandYardPlayer detective : players){
+				if (detective.isDetective()){
+					if(detective.location() == location)
+						occupied = true;
+				}
+			}
 		
 		return occupied;
 	}
@@ -262,8 +365,13 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	public void accept(Move move) {
 		if(!validMoves(getCurrentPlayerFromColour(currentPlayer)).contains(requireNonNull(move))) throw new IllegalArgumentException("Invalid move, move not contained in validMoves");		
 		move.visit(removeTicket);
-
-		if(currentPlayer != players_asColours.get(players_asColours.size() - 1)){	// makes sure to stop switching players after the rotation is done
+		
+		if(currentPlayer == players_asColours.get(players_asColours.size() - 1)){	// makes sure to stop switching players after the rotation is done
+			for(Spectator current : spectators){
+				current.onRotationComplete(this);
+			}
+		}
+		else {
 			nextPlayer();
 			makeMoveCurrentPlayer();
 		}
@@ -280,8 +388,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	
 	@Override
 	public Collection<Spectator> getSpectators() {
-		// TODO
-		throw new RuntimeException("Implement me");
+		return Collections.unmodifiableList(spectators);
 	}
 
 	@Override
@@ -318,24 +425,25 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		boolean detectivesAreStuck = true;
 		Set<Colour> detectives = new HashSet<>();
 		
-		for(int i=1; i<players.size(); i++) // iterating through the detectives only
+		for(int i=1; i<players.size(); i++){ // iterating through the detectives only
 			if(!validMoves(players.get(i)).contains(new PassMove(players.get(i).colour()))){
 				detectivesAreStuck = false;
-				detectives.add(players.get(i).colour());	// just getting the detectives if they win
 			}
+			detectives.add(players.get(i).colour());	// just getting the detectives if they win
+		}
 		
 		if(detectivesAreStuck || currentRound > rounds.size() - 1){
 			winningPlayers.add(Black);
 			return true;
 		}
 		else if(mrXisCaptured || validMoves(players.get(0)).isEmpty()){
-			winningPlayers = detectives;
+			winningPlayers.addAll(detectives);
 			return true;
 		}
 		else
 			return false;
 	}
-
+	
 	@Override
 	public Colour getCurrentPlayer() {
 		return this.currentPlayer;
