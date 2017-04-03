@@ -259,10 +259,6 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		currentPlayer = players.get(0).colour();
 		if(isGameOver() == true) throw new IllegalStateException("Game is not over initially.");
 		makeMoveCurrentPlayer();
-		
-		if(isGameOver())
-			for(Spectator current : spectators)
-				current.onGameOver(this, winningPlayers);
 	}
 	
 	public Set<Move> validMoves(ScotlandYardPlayer player){
@@ -384,6 +380,11 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	private void makeMoveCurrentPlayer(){
     	ScotlandYardPlayer player = getCurrentPlayerFromColour(currentPlayer);
     	player.player().makeMove(this, player.location(), validMoves(player), this);
+    	
+    	if(isGameOver() == true){
+    		for(Spectator current : spectators)
+				current.onGameOver(this, winningPlayers);
+    	}
 	}
 	
 	@Override
@@ -437,7 +438,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 			return true;
 		}
 		else if(mrXisCaptured || validMoves(players.get(0)).isEmpty()){
-			winningPlayers.addAll(detectives);
+			winningPlayers = detectives;
 			return true;
 		}
 		else
