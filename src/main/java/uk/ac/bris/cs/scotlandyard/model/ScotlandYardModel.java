@@ -103,6 +103,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 					}
 				}
 				
+				
 			}
 			public void notifyOnRevealRound(DoubleMove move){
 				ScotlandYardPlayer mrX = players.get(0);
@@ -150,9 +151,9 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 				
 				secondMoveOfDoubleMove(move);
 				
-				
 				getCurrentPlayerFromColour(currentPlayer).location(move.finalDestination());
 				mrX.removeTicket(Double);
+				
 		}
 		
 			private void firstMoveOfDoubleMove(DoubleMove move){
@@ -165,7 +166,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 				for (Spectator current : spectators){
 					current.onRoundStarted(view, currentRound);
 					if(isRevealRound()) current.onMoveMade(view, move.firstMove());
-					else current.onMoveMade(view, new TicketMove(mrX.colour(), move.firstMove().ticket(), lastMrLocation));
+					else current.onMoveMade(view, new TicketMove(mrX.colour(), move.firstMove().ticket(), lastMrLocation));	
 				}
 			}
 			
@@ -364,7 +365,10 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		
 		if(currentPlayer == players_asColours.get(players_asColours.size() - 1)){	// makes sure to stop switching players after the rotation is done
 			for(Spectator current : spectators){
-				current.onRotationComplete(this);
+				if (isGameOver()){
+					current.onGameOver(view, winningPlayers);
+				}
+				else current.onRotationComplete(this);
 			}
 		}
 		else {
@@ -379,12 +383,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	
 	private void makeMoveCurrentPlayer(){
     	ScotlandYardPlayer player = getCurrentPlayerFromColour(currentPlayer);
-    	player.player().makeMove(this, player.location(), validMoves(player), this);
-    	
-    	if(isGameOver() == true){
-    		for(Spectator current : spectators)
-				current.onGameOver(this, winningPlayers);
-    	}
+    	player.player().makeMove(this, player.location(), validMoves(player), this);  	
 	}
 	
 	@Override
