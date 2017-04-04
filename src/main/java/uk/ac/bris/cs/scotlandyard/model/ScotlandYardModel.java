@@ -95,18 +95,18 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 					}
 				}
 				if(currentPlayer.isMrX()) {
+					TicketMove mrXhiddenMove = new TicketMove(curPlayer.colour(), move.ticket(), lastMrLocation);
 					currentRound++;
 					for (Spectator current : spectators){
 						current.onRoundStarted(view, currentRound);
 						if (isRevealRound()) current.onMoveMade(view, move);
-						else current.onMoveMade(view, new TicketMove(curPlayer.colour(), move.ticket(), lastMrLocation));
+						else current.onMoveMade(view, mrXhiddenMove);
 					}
 				}
 				
 				
 			}
 			public void notifyOnRevealRound(DoubleMove move){
-				ScotlandYardPlayer mrX = players.get(0);
 				
 				if(isRevealRound()) { //FIRST MOVE IS REVEAL ROUND.
 					currentRound++;
@@ -154,11 +154,11 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 				getCurrentPlayerFromColour(currentPlayer).location(move.finalDestination());
 				mrX.removeTicket(Double);
 				
-		}
+		    }
 		
 			private void firstMoveOfDoubleMove(DoubleMove move){
 				ScotlandYardPlayer mrX = getCurrentPlayerFromColour(Black);
-				
+				TicketMove mrXhiddenMove = new TicketMove(mrX.colour(), move.firstMove().ticket(), lastMrLocation);
 				mrX.removeTicket(move.firstMove().ticket());
 				currentRound++;
 				mrX.location(move.firstMove().destination());
@@ -166,13 +166,13 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 				for (Spectator current : spectators){
 					current.onRoundStarted(view, currentRound);
 					if(isRevealRound()) current.onMoveMade(view, move.firstMove());
-					else current.onMoveMade(view, new TicketMove(mrX.colour(), move.firstMove().ticket(), lastMrLocation));	
+					else current.onMoveMade(view, mrXhiddenMove);	
 				}
 			}
 			
 			private void secondMoveOfDoubleMove(DoubleMove move){
 				ScotlandYardPlayer mrX = getCurrentPlayerFromColour(Black);
-				
+				TicketMove mrXhiddenMove = new TicketMove(mrX.colour(), move.secondMove().ticket(), lastMrLocation);
 				mrX.removeTicket(move.secondMove().ticket());
 				currentRound++;
 				mrX.location(move.secondMove().destination());
@@ -180,7 +180,7 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 				for (Spectator current : spectators){
 					current.onRoundStarted(view, currentRound);
 					if(isRevealRound()) current.onMoveMade(view, move.secondMove());
-					else current.onMoveMade(view, new TicketMove(mrX.colour(), move.secondMove().ticket(), lastMrLocation));
+					else current.onMoveMade(view, mrXhiddenMove);
 				}
 			}
 		};
@@ -365,15 +365,20 @@ public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 		
 		if(currentPlayer == players_asColours.get(players_asColours.size() - 1)){	// makes sure to stop switching players after the rotation is done
 			for(Spectator current : spectators){
-				if (isGameOver()){
-					current.onGameOver(view, winningPlayers);
-				}
-				else current.onRotationComplete(this);
+				current.onRotationComplete(view);
+				if (isGameOver()) current.onGameOver(view, winningPlayers);
 			}
 		}
 		else {
-			nextPlayer();
-			makeMoveCurrentPlayer();
+			if(mrXisCaptured == true){
+				for(Spectator current : spectators){
+					current.onGameOver(view, winningPlayers);
+				}
+			}
+			else {
+				nextPlayer();
+				makeMoveCurrentPlayer();
+			}
 		}
 	}
 	
