@@ -15,19 +15,19 @@ import static uk.ac.bris.cs.scotlandyard.model.Ticket.Double;
 
 public class ScotlandYardModel implements ScotlandYardGame, Consumer<Move> {
 	
-	private List<Boolean> rounds;
-	private Graph<Integer, Transport> graph;
+	private final List<Boolean> rounds;
+	private final Graph<Integer, Transport> graph;
 	private int lastMrLocation;
-	private List<PlayerConfiguration> configurations;
+	private final List<PlayerConfiguration> configurations;
 	private Colour currentPlayer;
 	private int currentRound;
 	private Set<Colour> winningPlayers;
 	private List<ScotlandYardPlayer> players;
-	private List<Colour> players_asColours;
-	private MoveVisitor ticketLogic;
+	private final List<Colour> players_asColours;
+	private final MoveVisitor ticketLogic;
 	private Boolean mrXisCaptured;
 	private final List<Spectator> spectators;
-	private ScotlandYardModel view;
+	private final ScotlandYardModel view;
 	
 	public ScotlandYardModel(List<Boolean> rounds, Graph<Integer, Transport> graph,
 			PlayerConfiguration mrX, PlayerConfiguration firstDetective,
