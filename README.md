@@ -9,7 +9,7 @@ The main focus was put on using design patterns such as Builders, Singletons, Vi
 The code is also dry and well-structured into many small methods each of which has its own task.
 
 ## Features
-*1. **Valid start checks** - check whether the games instantiates correctly, aka, right types  
+**1. Valid start checks** - check whether the games instantiates correctly, aka, right types  
 and number of arguments.  
-*2. **Valid move checks** - makes sure to calculate all the valid moves of a player, given his tickets and position.  
-*3. **Implemented AI for mrX** - Please check the [AI Project](https://github.com/TheWalkingFridge/Scotland-Yard-AI) for more info.
+**2. Valid move checks** - makes sure to calculate all the valid moves of a player, given his tickets and position.  
+**3. Implemented AI for mrX** - Please check the [AI Project](https://github.com/TheWalkingFridge/Scotland-Yard-AI) for more info.
