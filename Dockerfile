@@ -19,4 +19,4 @@ RUN export uid=1000 gid=1000 \
 RUN apt-get install -y openjdk-8-jdk maven openjfx \
     && mvn clean package
 
-CMD mvn exec:java -Dexec.mainClass="uk.ac.bris.cs.scotlandyard.Main" -s /java/ScotlandYard/settings.xml
+CMD mvn exec:java
