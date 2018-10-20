@@ -21,7 +21,7 @@ The game was solely writen in Java using Maven
 * Maven plugin
 * Or build with Docker
 
-## Build using docker
+## Build using Docker
 ### Build the image
 ```
 make install
@@ -34,3 +34,6 @@ make run
 ```
 make clean
 ```
+## TODO
+* Add shared volume for savefiles
+* make tests for running tests only
