@@ -1,11 +1,16 @@
 FROM ubuntu:16.04
 
-RUN mkdir java && mkdir java/ScotlandYard
+RUN mkdir java && mkdir java/ScotlandYard && mkdir java/ScotlandYard/build
 
 WORKDIR /java/ScotlandYard
 
 COPY config/* ./
 COPY src/ ./src/
+ADD init/run.sh ./
+ADD init/build.sh ./
+
+RUN chmod a+x run.sh
+RUN chmod a+x build.sh
 
 RUN apt-get -y update && apt-get -y install && apt-get -y upgrade \
     && apt-get install -y software-properties-common && add-apt-repository ppa:webupd8team/java \
@@ -19,4 +24,4 @@ RUN export uid=1000 gid=1000 \
 RUN apt-get install -y openjdk-8-jdk maven openjfx \
     && mvn clean package
 
-CMD mvn exec:java
+RUN cp ./target/*.jar /java/ScotlandYard/build

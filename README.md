@@ -1,12 +1,7 @@
 # Scotland-Yard
 
 ## About
-This is a game recreation of the popular table game Scotland-Yard. The whole project was part of the University of Bristol OOP curriculum. The main focus was put on writing DRY, well-structured code that follows conventions whilst implementing many OOP design patterns. An additional [player AI](https://github.com/TheWalkingFridge/Scotland-Yard-AI) was also build.
-
-The game was solely writen in Java using Maven
-
-## Code status
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/) [![Build status](https://travis-ci.org/google/licenseclassifier.svg?branch=master)](https://travis-ci.org/google/licenseclassifier)
+Scotland Yard is a board game in which a team of players, as police, cooperate to track down a player controlling a criminal around a board representing the streets of London. It is named after Scotland Yard, the headquarters of London's Metropolitan Police Service. Scotland Yard is an asymmetric board game, with the detective players cooperatively solving a variant of the pursuit-evasion problem. The game is published by Ravensburger in most of Europe and Canada and by Milton Bradley in the United States. It received the Spiel des Jahres (Game of the Year) award in 1983. (Wikipedia)
 
 ## Features
 * Fully playable game Scotland-Yard, with an interactive UI.
@@ -24,9 +19,13 @@ The game was solely writen in Java using Maven
 ## Build using Docker
 ### Build the image
 ```
-make install
+make buildimage
 ```
-### Run the container
+### Build the jar file
+```
+make build
+```
+### Run the game from the container
 ```
 make run
 ```
