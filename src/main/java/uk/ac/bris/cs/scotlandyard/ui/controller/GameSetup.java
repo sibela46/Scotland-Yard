@@ -50,6 +50,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import uk.ac.bris.cs.fxkit.BindFXML;
@@ -77,257 +79,261 @@ import uk.ac.bris.cs.scotlandyard.ui.model.TicketProperty;
 @BindFXML(value = "layout/GameSetup.fxml", css = "style/localsetup.css")
 public final class GameSetup implements Controller {
 
-	private static final int RANDOM = -1;
-	private final ResourceManager manager;
+  private static final int RANDOM = -1;
+  private final ResourceManager manager;
 
-	@FXML private VBox root;
+  @FXML private VBox root;
 
-	// players config tab
-	@FXML private GridPane playerEditor;
-	@FXML private TableView<PlayerProperty> playerTable;
-	@FXML private TableColumn<PlayerProperty, Boolean> enabled;
-	@FXML private TableColumn<PlayerProperty, Colour> colour;
-	@FXML private Label playerColour;
-	@FXML private TextField playerName;
-	@FXML private ComboBox<Integer> playerLocation;
-	@FXML private ChoiceBox<AI> playerAI;
-	@FXML private TableView<TicketProperty> playerTickets;
-	@FXML private TableColumn<TicketProperty, Ticket> playerTicketType;
-	@FXML private TableColumn<TicketProperty, Number> playerTicketCount;
-	@FXML private StackPane playerLocationContainer;
+  // players config tab
+  @FXML private GridPane playerEditor;
+  @FXML private TableView<PlayerProperty> playerTable;
+  @FXML private TableColumn<PlayerProperty, Boolean> enabled;
+  @FXML private TableColumn<PlayerProperty, Colour> colour;
+  @FXML private Label playerColour;
+  @FXML private TextField playerName;
+  @FXML private ComboBox<Integer> playerLocation;
+  @FXML private ChoiceBox<AI> playerAI;
+  @FXML private TableView<TicketProperty> playerTickets;
+  @FXML private TableColumn<TicketProperty, Ticket> playerTicketType;
+  @FXML private TableColumn<TicketProperty, Number> playerTicketCount;
+  @FXML private StackPane playerLocationContainer;
 
-	// round config tab
-	@FXML private Slider timeout;
-	@FXML private Label timeoutHint;
+  // round config tab
+  @FXML private Slider timeout;
+  @FXML private Label timeoutHint;
 
-	@FXML private Spinner<Integer> roundCount;
-	@FXML private FlowPane roundConfig;
+  @FXML private Spinner<Integer> roundCount;
+  @FXML private FlowPane roundConfig;
 
-	private ObservableList<PlayerProperty> playerEntries = FXCollections
-			.observableArrayList(v -> new Observable[] { v.enabledProperty(), });
-	private final SimpleBooleanProperty ready = new SimpleBooleanProperty();
-	private final List<AI> availableAIs;
-	private final EnumSet<Features> features;
+  @FXML private Tab tabRoundSettings;
+  @FXML private TabPane tabpaneSettings;
 
-	public enum Features {
-		NAME, LOCATION, AI, TICKETS
-	}
+  private ObservableList<PlayerProperty> playerEntries = FXCollections
+      .observableArrayList(v -> new Observable[] { v.enabledProperty(), });
+  private final SimpleBooleanProperty ready = new SimpleBooleanProperty();
+  private final List<AI> availableAIs;
+  private final EnumSet<Features> features;
 
-	GameSetup(ResourceManager manager, ModelProperty config, List<AI> availableAIs,
-			EnumSet<Features> features) {
-		Controller.bind(this);
-		this.manager = manager;
-		this.availableAIs = availableAIs;
-		this.features = features;
+  public enum Features {
+    NAME, LOCATION, AI, TICKETS
+  }
 
-		BooleanBinding blackSelected = Bindings.isNotEmpty(
-				playerEntries.filtered(PlayerProperty::mrX).filtered(PlayerProperty::enabled));
-		BooleanBinding atLeastTwoPlayer = Bindings
-				.size(playerEntries.filtered(PlayerProperty::enabled)).greaterThan(1);
-		ready.bind(blackSelected.and(atLeastTwoPlayer));
+  GameSetup(ResourceManager manager, ModelProperty config, List<AI> availableAIs,
+      EnumSet<Features> features) {
+    Controller.bind(this);
+    this.manager = manager;
+    this.availableAIs = availableAIs;
+    this.features = features;
 
-		bindRoundConfig(config);
-		bindPlayersConfig(config);
-	}
+    BooleanBinding blackSelected = Bindings.isNotEmpty(
+        playerEntries.filtered(PlayerProperty::mrX).filtered(PlayerProperty::enabled));
+    BooleanBinding atLeastTwoPlayer = Bindings
+        .size(playerEntries.filtered(PlayerProperty::enabled)).greaterThan(1);
+    ready.bind(blackSelected.and(atLeastTwoPlayer));
 
-	private void bindPlayersConfig(ModelProperty initialValue) {
-		playerTable.setItems(playerEntries);
-		playerEntries.addAll(initialValue.allPlayers());
-		enabled.setCellValueFactory(p -> p.getValue().enabledProperty());
-		enabled.setCellFactory(tc -> new CheckBoxTableCell<>());
-		colour.setCellValueFactory(p -> p.getValue().colourProperty());
-		colour.setCellFactory(tc -> new TableCell<PlayerProperty, Colour>() {
-			@Override
-			protected void updateItem(Colour item, boolean empty) {
-				if (!empty) {
-					Rectangle rectangle = new Rectangle(40, 20);
-					rectangle.setFill(Color.valueOf(item.name()));
-					rectangle.setStroke(Color.LIGHTGRAY);
-					rectangle.setStrokeWidth(1);
-					setGraphic(rectangle);
-				}
-				super.updateItem(item, empty);
-			}
-		});
+    bindRoundConfig(config);
+    bindPlayersConfig(config);
 
-		playerEntries.filtered(p -> p.ai() == null)
-				.forEach(p -> p.aiProperty().set(availableAIs.get(0)));
+    tabpaneSettings.getTabs().remove(tabRoundSettings);
+  }
 
-		TableViewSelectionModel<PlayerProperty> model = playerTable.getSelectionModel();
-		model.setSelectionMode(SelectionMode.SINGLE);
-		playerEditor.visibleProperty().bind(model.selectedIndexProperty().isNotEqualTo(-1));
-		playerTicketType.setCellValueFactory(p -> p.getValue().ticketProperty());
-		playerTicketCount.setCellValueFactory(p -> p.getValue().countProperty());
-		playerTicketCount.setCellFactory(cb -> new SpinnerTableCell<>(0, 100));
-		model.selectedItemProperty().addListener((o, p, c) -> bindPlayerConfig(p, c));
+  private void bindPlayersConfig(ModelProperty initialValue) {
+    playerTable.setItems(playerEntries);
+    playerEntries.addAll(initialValue.allPlayers());
+    enabled.setCellValueFactory(p -> p.getValue().enabledProperty());
+    enabled.setCellFactory(tc -> new CheckBoxTableCell<>());
+    colour.setCellValueFactory(p -> p.getValue().colourProperty());
+    colour.setCellFactory(tc -> new TableCell<PlayerProperty, Colour>() {
+      @Override
+      protected void updateItem(Colour item, boolean empty) {
+        if (!empty) {
+          Rectangle rectangle = new Rectangle(40, 20);
+          rectangle.setFill(Color.valueOf(item.name()));
+          rectangle.setStroke(Color.LIGHTGRAY);
+          rectangle.setStrokeWidth(1);
+          setGraphic(rectangle);
+        }
+        super.updateItem(item, empty);
+      }
+    });
 
-		model.select(0);
+    playerEntries.filtered(p -> p.ai() == null)
+        .forEach(p -> p.aiProperty().set(availableAIs.get(0)));
 
-	}
+    TableViewSelectionModel<PlayerProperty> model = playerTable.getSelectionModel();
+    model.setSelectionMode(SelectionMode.SINGLE);
+    playerEditor.visibleProperty().bind(model.selectedIndexProperty().isNotEqualTo(-1));
+    playerTicketType.setCellValueFactory(p -> p.getValue().ticketProperty());
+    playerTicketCount.setCellValueFactory(p -> p.getValue().countProperty());
+    playerTicketCount.setCellFactory(cb -> new SpinnerTableCell<>(0, 100));
+    model.selectedItemProperty().addListener((o, p, c) -> bindPlayerConfig(p, c));
 
-	private void bindPlayerConfig(PlayerProperty previous, PlayerProperty current) {
-		if (current == null) return;
-		if (previous != null) previous.observables().forEach(Property::unbind);
-		selections.unsubscribe();
+    model.select(0);
 
-		FadeTransition transition = new FadeTransition(millis(250), playerEditor);
-		transition.setInterpolator(new DecelerateInterpolator(2f));
-		transition.setFromValue(0);
-		transition.setToValue(1);
-		transition.play();
+  }
 
-		playerEditor.disableProperty().bind(current.enabledProperty().not());
-		playerColour.setText(current.colour().toString() + " player");
+  private void bindPlayerConfig(PlayerProperty previous, PlayerProperty current) {
+    if (current == null) return;
+    if (previous != null) previous.observables().forEach(Property::unbind);
+    selections.unsubscribe();
 
-		playerName.setText(current.name().orElse(""));
-		playerName.setDisable(!features.contains(Features.NAME));
-		current.nameProperty().bind(playerName.textProperty());
+    FadeTransition transition = new FadeTransition(millis(250), playerEditor);
+    transition.setInterpolator(new DecelerateInterpolator(2f));
+    transition.setFromValue(0);
+    transition.setToValue(1);
+    transition.play();
 
-		playerAI.setItems(FXCollections.observableArrayList(availableAIs));
-		playerAI.setConverter(LambdaStringConverter.forwardOnly("NA", AI::getName));
-		playerAI.setDisable(!features.contains(Features.AI));
-		if (current.ai() == null)
-			playerAI.getSelectionModel().select(availableAIs.get(0));
-		else playerAI.getSelectionModel().select(current.ai().orElse(null));
-		current.aiProperty().bind(playerAI.getSelectionModel().selectedItemProperty());
+    playerEditor.disableProperty().bind(current.enabledProperty().not());
+    playerColour.setText(current.colour().toString() + " player");
 
-		bindPlayerLocation(current);
-		playerTickets.setItems(current.tickets());
-		playerTickets.setDisable(!features.contains(Features.TICKETS));
-	}
+    playerName.setText(current.name().orElse(""));
+    playerName.setDisable(!features.contains(Features.NAME));
+    current.nameProperty().bind(playerName.textProperty());
 
-	private Subscription selections = Subscription.EMPTY;
+    playerAI.setItems(FXCollections.observableArrayList(availableAIs));
+    playerAI.setConverter(LambdaStringConverter.forwardOnly("NA", AI::getName));
+    playerAI.setDisable(!features.contains(Features.AI));
+    if (current.ai() == null)
+      playerAI.getSelectionModel().select(availableAIs.get(0));
+    else playerAI.getSelectionModel().select(current.ai().orElse(null));
+    current.aiProperty().bind(playerAI.getSelectionModel().selectedItemProperty());
 
-	private void bindPlayerLocation(PlayerProperty current) {
-		MapPreviewPane preview;
-		Node previewNode = playerLocationContainer.lookup("#locationPreview");
-		if (previewNode == null) {
-			preview = new MapPreviewPane(manager);
-			preview.setId("locationPreview");
-			GesturePane e = new GesturePane(preview, ScrollMode.ZOOM);
-			playerLocationContainer.getChildren().add(0, e);
-			Platform.runLater(() -> {
-				e.zoomTo(1, true);
-			});
-		} else {
-			preview = (MapPreviewPane) previewNode;
-		}
+    bindPlayerLocation(current);
+    playerTickets.setItems(current.tickets());
+    playerTickets.setDisable(!features.contains(Features.TICKETS));
+  }
 
-		boolean disabled = !features.contains(Features.LOCATION);
-		playerLocation.setDisable(disabled);
-		playerLocationContainer.setDisable(disabled);
+  private Subscription selections = Subscription.EMPTY;
 
-		current.locationProperty().unbind();
-		selections.unsubscribe();
-		preview.reset();
+  private void bindPlayerLocation(PlayerProperty current) {
+    MapPreviewPane preview;
+    Node previewNode = playerLocationContainer.lookup("#locationPreview");
+    if (previewNode == null) {
+      preview = new MapPreviewPane(manager);
+      preview.setId("locationPreview");
+      GesturePane e = new GesturePane(preview, ScrollMode.ZOOM);
+      playerLocationContainer.getChildren().add(0, e);
+      Platform.runLater(() -> {
+        e.zoomTo(1, true);
+      });
+    } else {
+      preview = (MapPreviewPane) previewNode;
+    }
 
-		List<PlayerProperty> otherPlayers = playerEntries.stream().filter(p -> p != current)
-				.filter(p -> !p.randomLocation()).filter(PlayerProperty::enabled)
-				.collect(Collectors.toList());
+    boolean disabled = !features.contains(Features.LOCATION);
+    playerLocation.setDisable(disabled);
+    playerLocationContainer.setDisable(disabled);
 
-		Set<Integer> occupiedLocation = otherPlayers.stream().map(PlayerProperty::location)
-				.collect(Collectors.toSet());
-		otherPlayers.forEach(p -> preview.annotate(p.location(), p.colour()));
+    current.locationProperty().unbind();
+    selections.unsubscribe();
+    preview.reset();
 
-		List<Integer> locations = new ArrayList<>(current.colour() == Colour.Black
-				? StandardGame.MRX_LOCATIONS : StandardGame.DETECTIVE_LOCATIONS);
+    List<PlayerProperty> otherPlayers = playerEntries.stream().filter(p -> p != current)
+        .filter(p -> !p.randomLocation()).filter(PlayerProperty::enabled)
+        .collect(Collectors.toList());
 
-		List<Integer> availableLocations = new ArrayList<>(locations);
-		availableLocations.removeAll(occupiedLocation);
+    Set<Integer> occupiedLocation = otherPlayers.stream().map(PlayerProperty::location)
+        .collect(Collectors.toSet());
+    otherPlayers.forEach(p -> preview.annotate(p.location(), p.colour()));
 
-		preview.highlight(availableLocations);
+    List<Integer> locations = new ArrayList<>(current.colour() == Colour.Black
+        ? StandardGame.MRX_LOCATIONS : StandardGame.DETECTIVE_LOCATIONS);
 
-		ArrayList<Integer> selectableLocations = new ArrayList<>(availableLocations);
-		selectableLocations.add(0, RANDOM);
-		LambdaStringConverter<Integer> converter = LambdaStringConverter
-				.forwardOnly(i -> i == RANDOM ? "Random" : i.toString());
-		playerLocation.setItems(FXCollections.observableList(selectableLocations));
-		playerLocation.setConverter(converter);
-		playerLocation.setCellFactory(cb -> {
-			TextFieldListCell<Integer> cell = new TextFieldListCell<>(converter);
-			EasyBind.subscribe(cell.hoverProperty(),
-					hovered -> preview.annotate(cell.getItem(), current.colour()));
-			return cell;
-		});
-		SingleSelectionModel<Integer> model = playerLocation.getSelectionModel();
-		selections = EasyBind.subscribe(model.selectedItemProperty(), location -> {
-			if (location != null && location != RANDOM)
-				preview.annotate(location, current.colour());
-		});
+    List<Integer> availableLocations = new ArrayList<>(locations);
+    availableLocations.removeAll(occupiedLocation);
 
-		model.select((Integer) current.location());
-		current.locationProperty().bind(model.selectedItemProperty());
-	}
+    preview.highlight(availableLocations);
 
-	private void bindRoundConfig(ModelConfiguration initialValue) {
-		// timeout
-		timeoutHint.textProperty().bind(EasyBind.map(timeout.valueProperty(), Number::doubleValue)
-				.map(Math::round).map(String::valueOf));
-		timeout.valueProperty().setValue(initialValue.timeoutProperty().get().getSeconds());
+    ArrayList<Integer> selectableLocations = new ArrayList<>(availableLocations);
+    selectableLocations.add(0, RANDOM);
+    LambdaStringConverter<Integer> converter = LambdaStringConverter
+        .forwardOnly(i -> i == RANDOM ? "Random" : i.toString());
+    playerLocation.setItems(FXCollections.observableList(selectableLocations));
+    playerLocation.setConverter(converter);
+    playerLocation.setCellFactory(cb -> {
+      TextFieldListCell<Integer> cell = new TextFieldListCell<>(converter);
+      EasyBind.subscribe(cell.hoverProperty(),
+          hovered -> preview.annotate(cell.getItem(), current.colour()));
+      return cell;
+    });
+    SingleSelectionModel<Integer> model = playerLocation.getSelectionModel();
+    selections = EasyBind.subscribe(model.selectedItemProperty(), location -> {
+      if (location != null && location != RANDOM)
+        preview.annotate(location, current.colour());
+    });
 
-		IntFunction<ToggleButton> mapper = i -> {
-			ToggleButton button = new ToggleButton(String.valueOf(i + 1));
-			button.setPrefWidth(45);
-			boolean b = i >= initialValue.revealRounds().size() ? false
-					: initialValue.revealRounds().get(i);
-			button.setSelected(b);
-			return button;
-		};
+    model.select((Integer) current.location());
+    current.locationProperty().bind(model.selectedItemProperty());
+  }
 
-		// rounds
-		ObservableList<Node> roundToggles = roundConfig.getChildren();
-		roundToggles.addAll(IntStream.range(0, initialValue.revealRounds().size()).mapToObj(mapper)
-				.collect(Collectors.toList()));
+  private void bindRoundConfig(ModelConfiguration initialValue) {
+    // timeout
+    timeoutHint.textProperty().bind(EasyBind.map(timeout.valueProperty(), Number::doubleValue)
+        .map(Math::round).map(String::valueOf));
+    timeout.valueProperty().setValue(initialValue.timeoutProperty().get().getSeconds());
 
-		roundCount.setValueFactory(new IntegerSpinnerValueFactory(1, 99, roundToggles.size()));
-		EasyBind.subscribe(roundCount.valueProperty(), count -> {
-			int modelCount = roundToggles.size();
-			if (count == 0) {
-				roundToggles.clear();
-			} else if (count < modelCount) {
-				roundToggles.remove(count, modelCount);
-			} else if (count > modelCount) {
-				IntStream.range(modelCount, count).mapToObj(mapper)
-						.collect(Collectors.toCollection(() -> roundToggles));
-			}
-		});
+    IntFunction<ToggleButton> mapper = i -> {
+      ToggleButton button = new ToggleButton(String.valueOf(i + 1));
+      button.setPrefWidth(45);
+      boolean b = i >= initialValue.revealRounds().size() ? false
+          : initialValue.revealRounds().get(i);
+      button.setSelected(b);
+      return button;
+    };
 
-	}
+    // rounds
+    ObservableList<Node> roundToggles = roundConfig.getChildren();
+    roundToggles.addAll(IntStream.range(0, initialValue.revealRounds().size()).mapToObj(mapper)
+        .collect(Collectors.toList()));
 
-	ModelProperty createGameConfig() {
+    roundCount.setValueFactory(new IntegerSpinnerValueFactory(1, 99, roundToggles.size()));
+    EasyBind.subscribe(roundCount.valueProperty(), count -> {
+      int modelCount = roundToggles.size();
+      if (count == 0) {
+        roundToggles.clear();
+      } else if (count < modelCount) {
+        roundToggles.remove(count, modelCount);
+      } else if (count > modelCount) {
+        IntStream.range(modelCount, count).mapToObj(mapper)
+            .collect(Collectors.toCollection(() -> roundToggles));
+      }
+    });
 
-		Set<Integer> locationSelected = playerEntries.stream().filter(PlayerProperty::enabled)
-				.filter(PlayerProperty::detective).filter(p -> !p.randomLocation())
-				.map(PlayerProperty::location).collect(Collectors.toSet());
+  }
 
-		// fill in all the random locations
-		ArrayList<Integer> availableLocation = new ArrayList<>(StandardGame.DETECTIVE_LOCATIONS);
-		availableLocation.removeAll(locationSelected);
-		Collections.shuffle(availableLocation);
-		ArrayDeque<Integer> deque = new ArrayDeque<>(availableLocation);
-		playerEntries.forEach(p -> p.locationProperty().unbind());
-		playerEntries.filtered(PlayerProperty::randomLocation).forEach(p -> {
-			if (p.mrX()) {
-				p.locationProperty().set(StandardGame.MRX_LOCATIONS
-						.get(new Random().nextInt(StandardGame.MRX_LOCATIONS.size())));
-			} else {
-				p.locationProperty().set(deque.pop());
-			}
-		});
+  ModelProperty createGameConfig() {
+    Set<Integer> locationSelected = playerEntries.stream().filter(PlayerProperty::enabled)
+        .filter(PlayerProperty::detective).filter(p -> !p.randomLocation())
+        .map(PlayerProperty::location).collect(Collectors.toSet());
 
-		return new ModelProperty(Duration.ofSeconds(Math.round(timeout.getValue())),
-				roundConfig.getChildren().stream().map(ToggleButton.class::cast)
-						.map(ToggleButton::isSelected).collect(Collectors.toList()),
-				playerEntries, new ImmutableGraph<>(manager.getGraph()));
-	}
+    // fill in all the random locations
+    ArrayList<Integer> availableLocation = new ArrayList<>(StandardGame.DETECTIVE_LOCATIONS);
+    availableLocation.removeAll(locationSelected);
+    Collections.shuffle(availableLocation);
+    ArrayDeque<Integer> deque = new ArrayDeque<>(availableLocation);
+    playerEntries.forEach(p -> p.locationProperty().unbind());
+    playerEntries.filtered(PlayerProperty::randomLocation).forEach(p -> {
+      if (p.mrX()) {
+        p.locationProperty().set(StandardGame.MRX_LOCATIONS
+            .get(new Random().nextInt(StandardGame.MRX_LOCATIONS.size())));
+      } else {
+        p.locationProperty().set(deque.pop());
+      }
+    });
 
-	ReadOnlyBooleanProperty readyProperty() {
-		return ready;
-	}
+    return new ModelProperty(Duration.ofSeconds(Math.round(timeout.getValue())),
+        roundConfig.getChildren().stream().map(ToggleButton.class::cast)
+            .map(ToggleButton::isSelected).collect(Collectors.toList()),
+        playerEntries, new ImmutableGraph<>(manager.getGraph()));
+  }
 
-	@Override
-	public Parent root() {
-		return root;
-	}
+  ReadOnlyBooleanProperty readyProperty() {
+    return ready;
+  }
+
+  @Override
+  public Parent root() {
+    return root;
+  }
 
 }

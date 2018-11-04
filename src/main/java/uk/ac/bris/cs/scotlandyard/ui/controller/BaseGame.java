@@ -37,172 +37,173 @@ import uk.ac.bris.cs.scotlandyard.ui.model.BoardProperty;
 @BindFXML("layout/Game.fxml")
 public abstract class BaseGame implements Controller {
 
-	@FXML private VBox root;
-	@FXML private MenuBar menu;
+  @FXML private VBox root;
+  @FXML private MenuBar menu;
 
-	@FXML private Menu gameMenu;
-	@FXML private MenuItem close;
+  @FXML private Menu gameMenu;
+  @FXML private MenuItem close;
 
-	@FXML private MenuItem findNode;
-	@FXML private MenuItem manual;
-	@FXML private MenuItem debug;
-	@FXML private MenuItem license;
-	@FXML private MenuItem about;
+  @FXML private MenuItem findNode;
+  @FXML private MenuItem manual;
+  @FXML private MenuItem debug;
+  @FXML private MenuItem license;
+  @FXML private MenuItem about;
 
-	@FXML private MenuItem resetViewport;
+  @FXML private MenuItem resetViewport;
 
-	@FXML private CheckMenuItem focusToggle;
-	@FXML private CheckMenuItem historyToggle;
+  @FXML private CheckMenuItem focusToggle;
+  @FXML private CheckMenuItem historyToggle;
 
-	@FXML private CheckMenuItem travelLogToggle;
-	@FXML private CheckMenuItem ticketToggle;
-	@FXML private CheckMenuItem statusToggle;
-	@FXML private CheckMenuItem scrollToggle;
+  @FXML private CheckMenuItem travelLogToggle;
+  @FXML private CheckMenuItem ticketToggle;
+  @FXML private CheckMenuItem statusToggle;
+  @FXML private CheckMenuItem scrollToggle;
 
-	@FXML private AnchorPane gamePane;
-	@FXML private StackPane mapPane;
-	@FXML private StackPane setupPane;
-	@FXML private StackPane roundsPane;
-	@FXML private StackPane ticketsPane;
-	@FXML private StackPane playersPane;
-	@FXML private StackPane notificationPane;
+  @FXML private AnchorPane gamePane;
+  @FXML private StackPane mapPane;
+  @FXML private StackPane setupPane;
+  @FXML private StackPane roundsPane;
+  @FXML private StackPane ticketsPane;
+  @FXML private StackPane playersPane;
+  @FXML private StackPane notificationPane;
 
-	@FXML private VBox statusPane;
+  @FXML private VBox statusPane;
 
-	private final Stage stage;
+  private final Stage stage;
 
-	final ResourceManager resourceManager;
-	final BoardProperty config = new BoardProperty();
+  final ResourceManager resourceManager;
+  final BoardProperty config = new BoardProperty();
 
-	// create all controllers
-	final Board board;
-	final TravelLog travelLog;
-	final TicketsCounter ticketsCounter;
-	final Notifications notifications;
-	final Status status;
+  // create all controllers
+  final Board board;
+  final TravelLog travelLog;
+  final TicketsCounter ticketsCounter;
+  final Notifications notifications;
+  final Status status;
 
-	BaseGame(ResourceManager manager, Stage stage) {
-		this.resourceManager = manager;
-		this.stage = stage;
-		Controller.bind(this);
+  BaseGame(ResourceManager manager, Stage stage) {
+    this.resourceManager = manager;
+    this.stage = stage;
+    Controller.bind(this);
 
-		// initialise all controllers
-		travelLog = new TravelLog(resourceManager, config);
-		ticketsCounter = new TicketsCounter(resourceManager, config);
-		notifications = new Notifications(resourceManager, config);
-		status = new Status(resourceManager, config);
-		board = new Board(resourceManager, notifications, config);
+    // initialise all controllers
+    travelLog = new TravelLog(resourceManager, config);
+    ticketsCounter = new TicketsCounter(resourceManager, config);
+    notifications = new Notifications(resourceManager, config);
+    status = new Status(resourceManager, config);
+    board = new Board(resourceManager, notifications, config);
 
-		Rectangle clip = new Rectangle();
-		clip.widthProperty().bind(gamePane.widthProperty());
-		clip.heightProperty().bind(gamePane.heightProperty());
-		gamePane.setClip(clip);
+    Rectangle clip = new Rectangle();
+    clip.widthProperty().bind(gamePane.widthProperty());
+    clip.heightProperty().bind(gamePane.heightProperty());
+    gamePane.setClip(clip);
 
-		// system menu
-		menu.setUseSystemMenuBar(true);
+    // system menu
+    menu.setUseSystemMenuBar(true);
 
-		// add all views
-		mapPane.getChildren().add(board.root());
-		roundsPane.getChildren().add(travelLog.root());
-		playersPane.getChildren().add(ticketsCounter.root());
-		notificationPane.getChildren().add(notifications.root());
-		statusPane.getChildren().add(status.root());
+    // add all views
+    mapPane.getChildren().add(board.root());
+    roundsPane.getChildren().add(travelLog.root());
+    playersPane.getChildren().add(ticketsCounter.root());
+    notificationPane.getChildren().add(notifications.root());
+    statusPane.getChildren().add(status.root());
 
-		close.setOnAction(e -> stage.close());
-		debug.setOnAction(evt -> {
-			try {
-				Debug.showDebugger(stage);
-			} catch (Exception e) {
-				Utils.handleFatalException(e);
-			}
-		});
-		about.setOnAction(e -> {
-			Alert alert = new Alert(AlertType.INFORMATION,
-					"ScotlandYard is part of the CW-MODEL coursework prepared for University of Bristol course COMS100001",
-					ButtonType.OK);
-			ImageView logo = new ImageView(resourceManager.getImage(ImageResource.UOB_LOGO));
-			logo.setPreserveRatio(true);
-			logo.setSmooth(true);
-			logo.setFitHeight(100);
-			alert.setGraphic(logo);
-			alert.setTitle("About ScotlandYard");
-			alert.setHeaderText("ScotlandYard v0.1");
-			alert.show();
-		});
+    close.setOnAction(e -> stage.close());
+    debug.setOnAction(evt -> {
+      try {
+        Debug.showDebugger(stage);
+      } catch (Exception e) {
+        Utils.handleFatalException(e);
+      }
+    });
+    about.setOnAction(e -> {
+      Alert alert = new Alert(AlertType.INFORMATION,
+          "ScotlandYard is part of the CW-MODEL coursework prepared for University of Bristol course COMS100001",
+          ButtonType.OK);
+      ImageView logo = new ImageView(resourceManager.getImage(ImageResource.UOB_LOGO));
+      logo.setPreserveRatio(true);
+      logo.setSmooth(true);
+      logo.setFitHeight(100);
+      alert.setGraphic(logo);
+      alert.setTitle("About ScotlandYard");
+      alert.setHeaderText("ScotlandYard v0.1");
+      alert.show();
+    });
 
-		findNode.setOnAction(e -> {
-			Stage s = new Stage();
-			s.setTitle("Find node");
-			s.setScene(new Scene(new FindNode(config, s, resourceManager).root()));
-			s.show();
-		});
-		manual.setOnAction(e -> {
-			Stage s = new Stage();
-			s.setTitle("Manual");
-			s.setScene(new Scene(new Manual(s).root()));
-			s.show();
-		});
+    findNode.setOnAction(e -> {
+      Stage s = new Stage();
+      s.setTitle("Find node");
+      s.setScene(new Scene(new FindNode(config, s, resourceManager).root()));
+      s.show();
+    });
+    manual.setOnAction(e -> {
+      Stage s = new Stage();
+      s.setTitle("Manual");
+      s.setScene(new Scene(new Manual(s).root()));
+      s.show();
+    });
 
-		license.setOnAction(e -> {
-			Stage s = new Stage();
-			s.setTitle("License");
-			s.setScene(new Scene(new License(s).root()));
-			s.show();
-		});
+    license.setOnAction(e -> {
+      Stage s = new Stage();
+      s.setTitle("License");
+      s.setScene(new Scene(new License(s).root()));
+      s.show();
+    });
 
-		// bind all menu values
-		resetViewport.setOnAction(e -> {
-			board.resetViewport();
-		});
+    // bind all menu values
+    resetViewport.setOnAction(e -> {
+      board.resetViewport();
+    });
 
-		setAndBind(travelLog.root().visibleProperty(), travelLogToggle.selectedProperty());
-		setAndBind(ticketsCounter.root().visibleProperty(), ticketToggle.selectedProperty());
-		setAndBind(config.scrollPanProperty(), scrollToggle.selectedProperty());
-		setAndBind(config.historyProperty(), historyToggle.selectedProperty());
-		setAndBind(config.focusPlayerProperty(), focusToggle.selectedProperty());
+    setAndBind(travelLog.root().visibleProperty(), travelLogToggle.selectedProperty());
+    setAndBind(ticketsCounter.root().visibleProperty(), ticketToggle.selectedProperty());
+    setAndBind(config.scrollPanProperty(), scrollToggle.selectedProperty());
+    setAndBind(config.historyProperty(), historyToggle.selectedProperty());
+    setAndBind(config.focusPlayerProperty(), focusToggle.selectedProperty());
 
-		if (SystemUtils.IS_OS_WINDOWS) config.scrollPanProperty().setValue(false);
+    if (SystemUtils.IS_OS_WINDOWS) config.scrollPanProperty().setValue(false);
 
-	}
 
-	private <T> void setAndBind(Property<T> source, Property<T> target) {
-		target.setValue(source.getValue());
-		target.bindBidirectional(source);
-	}
+  }
 
-	void showOverlay(Node node) {
-		gamePane.setEffect(new BoxBlur(5, 5, 2));
-		setupPane.getChildren().add(node);
-	}
+  private <T> void setAndBind(Property<T> source, Property<T> target) {
+    target.setValue(source.getValue());
+    target.bindBidirectional(source);
+  }
 
-	void hideOverlay() {
-		gamePane.setEffect(null);
-		setupPane.getChildren().clear();
-	}
+  void showOverlay(Node node) {
+    gamePane.setEffect(new BoxBlur(5, 5, 2));
+    setupPane.getChildren().add(node);
+  }
 
-	void addStatusNode(Node node) {
-		statusPane.getChildren().add(0, node);
-	}
+  void hideOverlay() {
+    gamePane.setEffect(null);
+    setupPane.getChildren().clear();
+  }
 
-	void addMenuItem(MenuItem item) {
-		gameMenu.getItems().add(0, item);
-	}
+  void addStatusNode(Node node) {
+    statusPane.getChildren().add(0, node);
+  }
 
-	protected ResourceManager manager() {
-		return resourceManager;
-	}
+  void addMenuItem(MenuItem item) {
+    gameMenu.getItems().add(0, item);
+  }
 
-	@Override
-	public Parent root() {
-		return root;
-	}
+  protected ResourceManager manager() {
+    return resourceManager;
+  }
 
-	public Stage getStage() {
-		return stage;
-	}
+  @Override
+  public Parent root() {
+    return root;
+  }
 
-	VisualiserSurface createVisualiserSurface() {
-		return new DefaultVisualiserSurface(stage, board.getVisualiserPane());
-	}
+  public Stage getStage() {
+    return stage;
+  }
+
+  VisualiserSurface createVisualiserSurface() {
+    return new DefaultVisualiserSurface(stage, board.getVisualiserPane());
+  }
 
 }

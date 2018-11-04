@@ -27,7 +27,7 @@
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></CheckMenuItem>
-                          <CheckMenuItem fx:id="travelLogToggle" mnemonicParsing="false" selected="true" text="Mr.X Verlauf Log">
+                          <CheckMenuItem fx:id="travelLogToggle" mnemonicParsing="false" selected="true" text="Mr.X Verlauf anzeigen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></CheckMenuItem>
@@ -35,15 +35,17 @@
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="T" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></CheckMenuItem>
-                          <CheckMenuItem fx:id="statusToggle" disable="true" mnemonicParsing="false" text="Status" />
+                          <CheckMenuItem fx:id="statusToggle" disable="true" visible="false" mnemonicParsing="false" text="Status" />
                           <SeparatorMenuItem mnemonicParsing="false" />
-                          <CheckMenuItem fx:id="scrollToggle" mnemonicParsing="false" text="Mausrad zum Zoomen" />
+                          <CheckMenuItem fx:id="scrollToggle" mnemonicParsing="false" selected="false" text="Scrollen zum Zoomen" />
                       </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="Hilfe">
                       <items>
                   <MenuItem fx:id="findNode" mnemonicParsing="false" text="Station finden" />
                           <MenuItem fx:id="manual" mnemonicParsing="false" text="Handbuch" />
+                          <MenuItem fx:id="debug" visible="false" mnemonicParsing="false" text="Debug" />
+                          <MenuItem fx:id="about" visible="false" mnemonicParsing="false" text="About">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator></MenuItem>
