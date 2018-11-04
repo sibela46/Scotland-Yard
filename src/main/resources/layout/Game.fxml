@@ -5,29 +5,29 @@
       <children>
           <MenuBar fx:id="menu" VBox.vgrow="NEVER">
               <menus>
-                  <Menu fx:id="gameMenu" mnemonicParsing="false" text="Game">
+                  <Menu fx:id="gameMenu" mnemonicParsing="false" text="Spiel">
                       <items>
-                          <MenuItem fx:id="close" mnemonicParsing="false" text="Close Window">
+                          <MenuItem fx:id="close" mnemonicParsing="false" text="Spiel beenden">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator></MenuItem>
                       </items>
                   </Menu>
-                  <Menu mnemonicParsing="false" text="View">
+                  <Menu mnemonicParsing="false" text="Ansicht">
                       <items>
-                          <MenuItem fx:id="resetViewport" mnemonicParsing="false" text="Reset viewport">
+                          <MenuItem fx:id="resetViewport" mnemonicParsing="false" text="Karte zurücksetzen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <CheckMenuItem fx:id="focusToggle" mnemonicParsing="false" text="Focus player">
+                  <CheckMenuItem fx:id="focusToggle" mnemonicParsing="false" text="Spieler fokussieren">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></CheckMenuItem>
-                          <CheckMenuItem fx:id="historyToggle" mnemonicParsing="false" text="Move history">
+                          <CheckMenuItem fx:id="historyToggle" mnemonicParsing="false" text="Verlauf anzeigen">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="H" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></CheckMenuItem>
-                          <CheckMenuItem fx:id="travelLogToggle" mnemonicParsing="false" selected="true" text="Mr.X Travel Log">
+                          <CheckMenuItem fx:id="travelLogToggle" mnemonicParsing="false" selected="true" text="Mr.X Verlauf Log">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="L" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></CheckMenuItem>
@@ -37,19 +37,17 @@
                      </accelerator></CheckMenuItem>
                           <CheckMenuItem fx:id="statusToggle" disable="true" mnemonicParsing="false" text="Status" />
                           <SeparatorMenuItem mnemonicParsing="false" />
-                          <CheckMenuItem fx:id="scrollToggle" mnemonicParsing="false" text="Scroll as zoom" />
+                          <CheckMenuItem fx:id="scrollToggle" mnemonicParsing="false" text="Mausrad zum Zoomen" />
                       </items>
                   </Menu>
-                  <Menu mnemonicParsing="false" text="Help">
+                  <Menu mnemonicParsing="false" text="Hilfe">
                       <items>
-                  <MenuItem fx:id="findNode" mnemonicParsing="false" text="Find node" />
-                          <MenuItem fx:id="manual" mnemonicParsing="false" text="Manual" />
-                          <MenuItem fx:id="debug" mnemonicParsing="false" text="Debug" />
-                          <MenuItem fx:id="about" mnemonicParsing="false" text="About">
+                  <MenuItem fx:id="findNode" mnemonicParsing="false" text="Station finden" />
+                          <MenuItem fx:id="manual" mnemonicParsing="false" text="Handbuch" />
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator></MenuItem>
-                          <MenuItem fx:id="license" mnemonicParsing="false" text="License" />
+                          <MenuItem fx:id="license" mnemonicParsing="false" text="Lizenz" />
                       </items>
                   </Menu>
               </menus>

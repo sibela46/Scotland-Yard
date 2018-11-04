@@ -11,8 +11,6 @@
             tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
             <tabs>
                 <Tab fx:id="gameSetup" closable="false" text="Setup" />
-                <Tab fx:id="savedConfigs" closable="false" text="Presets" />
-                <Tab fx:id="savedGames" closable="false" text="Saved games" />
             </tabs>
         </TabPane>
         <Button fx:id="start" maxWidth="1.7976931348623157E308" mnemonicParsing="false"

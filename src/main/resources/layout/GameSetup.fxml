@@ -5,14 +5,14 @@
     <children>
         <TabPane nodeOrientation="LEFT_TO_RIGHT" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
             <tabs>
-                <Tab text="Player settings">
+                <Tab text="Spielereinstellungen">
                     <content>
                         <SplitPane dividerPositions="0.17" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                             <items>
                                 <TableView fx:id="playerTable" editable="true" SplitPane.resizableWithParent="false">
                                     <columns>
-                                        <TableColumn fx:id="enabled" prefWidth="34.0" text="Join" />
-                                        <TableColumn fx:id="colour" editable="false" prefWidth="43.0" sortable="false" text="Colour" />
+                                        <TableColumn fx:id="enabled" prefWidth="34.0" text="Spielt" />
+                                        <TableColumn fx:id="colour" editable="false" prefWidth="43.0" sortable="false" text="Farbe" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -42,8 +42,8 @@
                                         <StackPane fx:id="playerLocationContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" pickOnBounds="false" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2147483647" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS" />
                                         <TableView fx:id="playerTickets" editable="true" prefHeight="180.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
                                             <columns>
-                                                <TableColumn fx:id="playerTicketType" editable="false" prefWidth="92.0" text="Type" />
-                                                <TableColumn fx:id="playerTicketCount" prefWidth="81.0" text="Count" />
+                                                <TableColumn fx:id="playerTicketType" editable="false" prefWidth="92.0" text="Typ" />
+                                                <TableColumn fx:id="playerTicketCount" prefWidth="81.0" text="Anzahl" />
                                             </columns>
                                             <columnResizePolicy>
                                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -58,45 +58,6 @@
                         </SplitPane>
                     </content>
                 </Tab>
-                <Tab text="Round settings">
-                    <content>
-                        <VBox prefHeight="200.0" prefWidth="100.0">
-                            <children>
-                                <HBox alignment="CENTER_LEFT" styleClass="setup-item">
-                                    <children>
-                                        <Label text="Move time">
-                                            <padding>
-                                                <Insets right="16.0" />
-                                            </padding>
-                                        </Label>
-                                        <Slider fx:id="timeout" majorTickUnit="14.0" max="120.0" min="1.0" minorTickCount="2" showTickLabels="true" showTickMarks="true" HBox.hgrow="ALWAYS" />
-                                        <Label fx:id="timeoutHint" text="10">
-                                            <padding>
-                                                <Insets left="16.0" />
-                                            </padding>
-                                        </Label>
-                                    </children>
-                                </HBox>
-                                <HBox alignment="CENTER_LEFT" styleClass="setup-item">
-                                    <children>
-                                        <Label text="Rounds">
-                                            <padding>
-                                                <Insets right="16.0" />
-                                            </padding>
-                                        </Label>
-                                        <Spinner fx:id="roundCount" />
-                                    </children>
-                                </HBox>
-                                <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" VBox.vgrow="ALWAYS">
-                                    <content>
-                                        <FlowPane fx:id="roundConfig" columnHalignment="CENTER" hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="setup-item" vgap="5.0" />
-                                    </content>
-                                </ScrollPane>
-                            </children>
-                        </VBox>
-                    </content>
-                </Tab>
-            </tabs>
         </TabPane>
     </children>
 </VBox>

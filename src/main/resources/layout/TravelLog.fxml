@@ -10,7 +10,7 @@
                     <columns>
                         <TableColumn fx:id="logRound" editable="false" minWidth="45.0" prefWidth="51.0" resizable="false" text="#" />
                         <TableColumn fx:id="logTicket" editable="false" prefWidth="94.0" resizable="false" text="Ticket" />
-                        <TableColumn fx:id="logLocation" editable="false" minWidth="50.0" prefWidth="64.0" resizable="false" text="Location" />
+                        <TableColumn fx:id="logLocation" editable="false" minWidth="50.0" prefWidth="64.0" resizable="false" text="Standort" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
